@@ -43,7 +43,7 @@
 	 ((atom? (car lexp)) #t)
          ((list? (car lexp)) (or-exp? (car lexp)))
 	 (else #f)))
-      ((member? (car lexp) a) 
+      ((member? (car lexp) b) 
        (cond
          ((atom? (car (cdr lexp))) (or-exp? (cdr (cdr lexp))))
          ((list? (car (cdr lexp))) (and (or-exp? (car (cdr lexp))) (or-exp? (cdr (cdr lexp)))))
@@ -60,7 +60,7 @@
 	 ((atom? (car lexp)) #t)
          ((list? (car lexp)) (not-exp? (car lexp)))
 	 (else #f)))
-      ((member? (car lexp) b) 
+      ((member? (car lexp) c) 
        (cond
          ((atom? (car (cdr lexp))) (not-exp? (cdr (cdr lexp))))
          ((list? (car (cdr lexp))) (and (not-exp? (car (cdr lexp))) (not-exp? (cdr (cdr lexp)))))
@@ -101,8 +101,28 @@
 (lexp? lexp2)
 (lexp? lexp3)
 (lexp? lexp4)
-(lexp? aexp1)
 (lexp? l2)
 (lexp? l1)
+(lexp? aexp1)
+(lexp? aexp2)
+(lexp? aexp3)
+
+(and-exp? lexp1)
+(and-exp? lexp2)
+(and-exp? lexp3)
+(and-exp? lexp4)
+
+(or-exp? lexp1)
+(or-exp? lexp2)
+(or-exp? lexp3)
+(or-exp? lexp4)
+
+(not-exp? lexp1)
+(not-exp? lexp2)
+(not-exp? lexp3)
+(not-exp? lexp4)
+
+
+
 
 
