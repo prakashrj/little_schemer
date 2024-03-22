@@ -12,6 +12,60 @@
      (else (member? a (cdr lat))))))
 
 (define v '(AND OR NOT))
+(define a '(AND))
+(define b '(OR))
+(define c '(NOT))
+
+(define and-exp?
+  (lambda (lexp)
+    (cond
+      ((null? lexp) #f)
+      ((atom? lexp) #t)
+      ((null? (cdr lexp))
+       (cond
+	 ((atom? (car lexp)) #t)
+         ((list? (car lexp)) (and-exp? (car lexp)))
+	 (else #f)))
+      ((member? (car lexp) a) 
+       (cond
+         ((atom? (car (cdr lexp))) (and-exp? (cdr (cdr lexp))))
+         ((list? (car (cdr lexp))) (and (and-exp? (car (cdr lexp))) (and-exp? (cdr (cdr lexp)))))
+         (else #f)))
+      (else #f))))
+
+(define or-exp?
+  (lambda (lexp)
+    (cond
+      ((null? lexp) #f)
+      ((atom? lexp) #t)
+      ((null? (cdr lexp))
+       (cond
+	 ((atom? (car lexp)) #t)
+         ((list? (car lexp)) (or-exp? (car lexp)))
+	 (else #f)))
+      ((member? (car lexp) a) 
+       (cond
+         ((atom? (car (cdr lexp))) (or-exp? (cdr (cdr lexp))))
+         ((list? (car (cdr lexp))) (and (or-exp? (car (cdr lexp))) (or-exp? (cdr (cdr lexp)))))
+         (else #f)))
+      (else #f))))
+      
+(define not-exp?
+  (lambda (lexp)
+    (cond
+      ((null? lexp) #f)
+      ((atom? lexp) #t)
+      ((null? (cdr lexp))
+       (cond
+	 ((atom? (car lexp)) #t)
+         ((list? (car lexp)) (not-exp? (car lexp)))
+	 (else #f)))
+      ((member? (car lexp) b) 
+       (cond
+         ((atom? (car (cdr lexp))) (not-exp? (cdr (cdr lexp))))
+         ((list? (car (cdr lexp))) (and (not-exp? (car (cdr lexp))) (not-exp? (cdr (cdr lexp)))))
+         (else #f)))
+      (else #f))))
 
 (define lexp?
   (lambda (lexp)
@@ -29,7 +83,8 @@
          ((list? (car (cdr lexp))) (and (lexp? (car (cdr lexp))) (lexp? (cdr (cdr lexp)))))
          (else #f)))
       (else #f))))
-      
+
+
 
 (define aexp1 '(1 + (3 * 4)))
 (define aexp2 '((3 ↑ 4) + 5))
