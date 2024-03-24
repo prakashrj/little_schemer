@@ -36,7 +36,7 @@
 	      (else #f))))) 
        ((list? (car (cdr lexp))) 
 	     (cond 
-	    ((list? (car (cdr (cdr lexp)))) (and (covered? (car (cdr lexp)) los) (covered? (car (cdr (cdr lexp))))))
+	    ((list? (car (cdr (cdr lexp)))) (and (covered? (car (cdr lexp)) los) (covered? (car (cdr (cdr lexp))) los)))
 	    (else (and (covered? (car (cdr lexp)) los) (member? (car (cdr (cdr lexp))) los)))))
        (else 
 	 (cond
