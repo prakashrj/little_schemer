@@ -1,0 +1,16 @@
+#lang racket
+
+(define multiinsertL
+ (lambda (new old lat)
+  (cond
+  ((null? lat) '())
+  (else (cond
+  ((eq? (car lat) old)
+   (cons new (cons old (multiinsertL new old (cdr lat)))))
+  (else (cons (car lat) (multiinsertL new old (cdr lat)))))))))
+
+(define lat '(Hi Bad Hi))
+(define new 'Jim)
+(define old 'Hi)
+
+(multiinsertL new old lat)
