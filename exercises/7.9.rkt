@@ -45,7 +45,7 @@
 
 (define get!
   (lambda (al)
-    (cond
+   (cond
       ((null? al) '())
       (else (cons (car (car al)) (get! (cdr al)))))))
       
@@ -53,20 +53,20 @@
   (lambda (var al)
     (cond
       ((null? al) '?)
-      ((member? (car (car al)) var) (car (cdr (car al))))
+      ((equal? var (car (car al)))
+       (cond
+	 ((zero? (car (cdr (car al)))) #f)
+	 (else #t)))
       (else (lookup var (cdr al))))))
 
-(define pair=
-  (lambda (al)
-    (cond
-      ((null? al) '())
-      ((zero? (car (cdr (car al)))) (define (car (car al)) #f) (pair= (cdr al)))
-      (else (define (car (car al)) #f) (pair= (cdr al)))
-
 (define Mlexp
-  (lambda (lexp l1)
+  (lambda (lexp al)
     (cond
-
+     ((equal? #t (not (covered? lexp (get! al)))) 'not-covered)
+     ((atom? lexp) (lookup lexp al))
+     ((equal? 'AND (car lexp)) (and (Mlexp (car (cdr lexp)) al) (Mlexp (car (cdr (cdr lexp))) al)))
+     ((equal? 'OR (car lexp)) (or (Mlexp (car (cdr lexp)) al) (Mlexp (car (cdr (cdr lexp))) al)))
+     (else (not (Mlexp (car (cdr lexp)) al))))))
 
 (define l1 '((x 1) (y 0) (z 0)))
 (define l2 '((y 0) (u 0) (v 1)))
@@ -74,6 +74,9 @@
 (define lexp2 '(AND (NOT y) (OR u v)))
 (define lexp4 'z)
 
-;(Mlexp lexp1 l1)
-;(Mlexp lexp2 l2)
+(Mlexp lexp1 l1)
+(Mlexp lexp2 l2)
 (Mlexp lexp4 l1)
+
+(and #t #t #f)
+
