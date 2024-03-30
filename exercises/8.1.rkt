@@ -11,6 +11,8 @@
      ((equal? a (car lat)) #t)
      (else (member? a (cdr lat))))))
 
+(define v '())
+
 (define null2
   (lambda (S) 
     (cond
@@ -26,6 +28,21 @@
       ((null2 (car S)) (1st-atom (cdr S)))
       (else (1st-atom (car S)))))) 
 
+(define rmvatom 
+  (lambda (a l) 
+    (cond
+      ((null? l) '())
+      ((atom? (car l))
+       (cond
+	 ((equal? a (car l)) (rmvatom a (cdr l)))
+	 (else (cons (car l) (rmvatom a (cdr l))))))
+      (else (cons (rmvatom a (car l)) (rmvatom a (cdr l)))))))
+
+(define domset
+  (lambda (rel v)
+    (cond 
+      ((null2 rel) v)
+      (else (domset (rmvatom (1st-atom rel) rel) (cons (1st-atom rel) v))))))
 
 
 (define idrel
@@ -46,6 +63,10 @@
 (define d1 '(a b))
 (define d2 '(c d))
 (define x 'a)
+
+(domset r1 '())
+(idrel d1)
+
 
 
 
