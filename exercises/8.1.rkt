@@ -51,6 +51,8 @@
       ((null? set) '())
       (else (cons (cons (car set) (cons (car set) '())) (idrel (cdr set)))))))
         
+(define symmetric?
+
 
 (define r1 '((a b) (a a) (b b)))
 (define r2 '((c c)))
@@ -66,7 +68,5 @@
 
 (domset r1 '())
 (idrel d1)
-
-
 
 
