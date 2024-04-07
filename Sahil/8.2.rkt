@@ -3,7 +3,7 @@
     (lambda (a l)
         (cond
             ((null? l) #f)
-            ((eq? (car l) a) #t)
+            ((equal? (car l) a) #t)
             (else (search a (cdr l)))
         )
     )
@@ -34,20 +34,25 @@
     )
 )
 
-(define idrel
-    (lambda (s)
-        (cond 
-            ((null? s) '())
-            (else (cons (cons (car s) (cons (car s) '())) (idrel (cdr s))))
+(define mylookup
+    (lambda (l r)
+        (cond
+            ((null? l) #t)
+            ((search (cons (car l) (cons (car l) '())) r) (mylookup (cdr l) r))
+            (else #f)
         )
     )
 )
 
+(define reflexive?
+    (lambda (r)
+        (mylookup (domset r) r)
+    )
+)
 
 (define r1 '((a b) (a a) (b b)))
 (define r2 '((c c)))
 (define r3 '((a c) (b c)))
-(domset r1)
-(domset r2)
-(domset r3)
-(idrel '(a 2 3))
+(reflexive? r1)
+(reflexive? r2)
+(reflexive? r3)
