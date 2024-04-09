@@ -1,23 +1,26 @@
 #lang racket
 
-(define o
-  (lambda (f d)
+(define o 
+  (lambda (f p)
     (cond
-      ((null? f) 
-        (cond
-	  ((= 1 0) '())))
-      ((equal? (car (cdr d)) (car (car f))) (cons (cons (car d) (cons (car (cdr (car f))) '())) (o (cdr f) d)))
-      (else (o (cdr f) d))))) 
+      ((null? f) '())
+      ((equal? (car (cdr p)) (car (car f))) (cons (cons (car p) (cons (car (cdr (car f))) '())) (o (cdr f) p)))
+      (else (o (cdr f) p)))))
+
+(define rem
+  (lambda (l)
+    (cond
+      ((null? (cdr l)) (car l))
+      (else (cons (car l) (rem (cdr l)))))))
+
+
 
 (define Fcomp
   (lambda (f g)
     (cond
       ((null? g) '())
-      (else (cons (o f (car g)) (Fcomp f (cdr g)))))))
-
-
-
-      
+      ((null? (o f (car g))) (Fcomp f (cdr g)))
+      (else (cons (rem (o f (car g))) (Fcomp f (cdr g)))))))
 
 (define r1 '((a b) (a a) (b b)))
 (define r2 '((c c)))
