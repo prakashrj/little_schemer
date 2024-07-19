@@ -1,5 +1,35 @@
 #lang racket
 
+(define lat?
+  (lambda (l)
+    (cond
+      ((null? l) #t)
+      (else (and (atom? (car l)) (lat? (cdr l)))))))
+
+(define member?
+(lambda (a lat)
+(cond
+((null? lat) #f)
+(else (or (eq? (car lat) a)
+(member? a (cdr lat))))))) 
+
+(define table?
+  (lambda (l)
+    (cond
+      ((null? l) #t)
+      (else (and (entry? (car l)) (lat? (cdr l)))))))
+
+(define set?
+  (lambda (l)
+    (cond
+      ((null? l) #t)
+      (else (and (atom? (car l)) (set? (cdr l)) (not (member? (car l) (cdr l))))))))
+
+(define entry?
+  (lambda (l)
+    (cond
+      ((and (eq? (length l) 2) (set? (car l)) (eq? (length (car l)) (length (second l))))))))
+
 (define a-pair?
   (lambda (l)
     (cond
@@ -217,7 +247,9 @@
 
 (define non-primitive?
   (lambda (l)
-    (pair? l)))
+   (cond
+    ((eq? (length l) 3) 
+      (and (table? (car l)) (lat? (second l)) (pair? l))))))
 
 (define apply-primitive
   (lambda (name vals)
@@ -271,8 +303,17 @@
     (error
       (format "Table lookup for ~a failed" name))))
 
+(define length
+  (lambda (l)
+    (cond
+      ((null? l) 0)
+      (else (+ 1 (length (cdr l)))))))
+
 (define e3 '((lambda (x) ((lambda (x) (add1 x)) (add1 4))) 6))
+(length '(a b c))
 (meaning '6 '())
 (evlis '(6) '())
 (meaning '(lambda (x) ((lambda (x) (add1 x)) (add1 4))) '())
 (value e3)
+(set? '(a b b))
+(non-primitive? '(() (x) ((lambda (x) (add1 x)) (add1 4))))
