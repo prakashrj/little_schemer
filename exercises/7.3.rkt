@@ -8,10 +8,7 @@
   (lambda (aexp)
     (cond
      ((atom? aexp) 0)
-     ((null? (cdr aexp))
-       (cond
-	 ((atom? (car aexp)) 0)
-	 (else (count-op (car aexp))))) 
+     ((null? (cdr aexp)) (count-op (car aexp)))
      ((atom? (car aexp)) (+ 1 (count-op (cdr (cdr aexp)))))
      (else (+ (count-op (car aexp)) (+ 1 (count-op (cdr (cdr aexp)))))))))
 
