@@ -1,7 +1,15 @@
 #lang racket
 
+(define atom?
+    (lambda(x)
+        (and (not (pair? x)) (not (null? x)))))
+
+(define build
+    (lambda (l1 l2)
+        (cons l1 (cons l2 '()))))
+
 (define
-  new-entry cons)
+  new-entry build)
 
 (define lookup-in-entry
   (lambda (name entry entry-f)
@@ -28,7 +36,7 @@
       ((number? e) e)
       ((eq? e #t) #t)
       ((eq? e #f) #f)
-      (else (cons (quote primitive) e)))))
+      (else (build (quote primitive) e)))))
 
 (define text-of second)
 
@@ -42,7 +50,7 @@
 
 (define *identifier
   (lambda (e table)
-    (lookup-in-table e table initial-table»)
+    (lookup-in-table e table initial-table)))
 
 (define *lambda
   (lambda (e table)
@@ -84,6 +92,9 @@
   (lambda (e table)
     ((expression-to-action e) e table)))
 
+(define value
+    (lambda (e)
+        (meaning e '())))
 
 (define table-of first)
 
@@ -112,7 +123,7 @@
 (define evlis
   (lambda (args table)
     (cond
-      ((null? args) (quote 0))
+      ((null? args) (quote ()))
       (else (cons (meaning (car args) table) (evlis (cdr args) table)))))) 
 
 (define primitive?
@@ -135,7 +146,7 @@
 (define apply-primitive
   (lambda (name vals)
     (cond
-      ((eq? name 'cons) (cons (first vals) (second vals)))
+      ((eq? name (quote cons)) (cons (first vals) (second vals)))
       ((eq? name (quote car)) (car (first vals)))
       ((eq? name (quote cdr)) (cdr (first vals)))
       ((eq? name (quote null?)) (null? (first vals)))
@@ -148,7 +159,7 @@
 
 (define apply-closure
   (lambda (closure vals)
-    (meaning (third closure) (build (build (second closure) vals) (car closure)))))
+    (meaning (third closure) (cons (build (second closure) vals) (car closure)))))
 
 (define apply 
   (lambda (fun vals)
@@ -160,4 +171,9 @@
   (lambda (e table)
     (apply (meaning (car e) table) (evlis (cdr e) table))))
 
+
+(value (cdr '(1 2 3)))
+;e = (cdr '(1 2 3))
+;cdr e=('(1 2 3))
+;(apply (primitive cdr) ((1 2 3)))
 
