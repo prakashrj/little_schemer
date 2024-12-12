@@ -171,9 +171,19 @@
   (lambda (e table)
     (apply (meaning (car e) table) (evlis (cdr e) table))))
 
-
-(value (cdr '(1 2 3)))
+;(define e '(cdr (quote (1 2 3))))
+;(define table '())
+;(meaning (car e) table)
+;(meaning (cdr e) table)
+;(define co (meaning '(quote (1 2 3)) table))
+;(apply (meaning (car e) table) '((1 2 3)))
+;(meaning (car '((1 2 3))) table)
+;(evlis '((1 2 3)) table)
+;(value '(cons 1 '(1 2)))
 ;e = (cdr '(1 2 3))
 ;cdr e=('(1 2 3))
 ;(apply (primitive cdr) ((1 2 3)))
-
+(value '(car '(1 2)))
+(value '(cons 'a '(1 2)))
+(value '(cdr '(1 2 3)))
+(value '(null? '(1)))
