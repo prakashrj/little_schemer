@@ -1,0 +1,8 @@
+#lang racket
+
+(define remainder
+  (lambda (n m)
+    (- n (* m (/ n m)))))
+
+(dene str-maker
+j:lambda (next n)
