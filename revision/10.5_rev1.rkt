@@ -6,7 +6,7 @@
 
 (define build
     (lambda (l1 l2)
-        (cons l1 (cons l2 (quote ())))))
+        (cons l1 (cons l2 '()))))
 
 (define
   new-entry build)
@@ -42,7 +42,7 @@
 
 (define *quote
   (lambda (e table)
-    (text-of e)))
+    (text-of e))) 
 
 (define initial-table
   (lambda (name)
@@ -54,7 +54,7 @@
 
 (define *lambda
   (lambda (e table)
-    (cons table (cdr e))))
+    (cons 'non-primitive (cons table (cdr e)))))
 
 (define atom-to-action
   (lambda (e)
@@ -62,32 +62,32 @@
       ((number? e) *const)
       ((eq? e #t) *const)
       ((eq? e #f) *const)
-      ((eq? e (quote cons)) *const)
-      ((eq? e (quote car)) *const)
-      ((eq? e (quote cdr)) *const)
-      ((eq? e (quote null?)) *const)
-      ((eq? e (quote eq?)) *const)
-      ((eq? e (quote atom?)) *const)
-      ((eq? e (quote zero?)) *const)
-      ((eq? e (quote add1)) *const)
-      ((eq? e (quote sub1)) *const)
-      ((eq? e (quote number?)) *const)
+      ((eq? e 'cons) *const)
+      ((eq? e 'car) *const)
+      ((eq? e 'cdr) *const)
+      ((eq? e 'null?) *const)  
+      ((eq? e 'eq?) *const)
+      ((eq? e 'atom?) *const)
+      ((eq? e 'zero?) *const)
+      ((eq? e 'add1) *const)
+      ((eq? e 'sub1) *const)
+      ((eq? e 'number?) *const)
       (else *identifier))))
 
 (define list-to-action
   (lambda (e)
     (cond
       ((atom? (car e))
-       (cond
-	 ((eq? (car e) (quote quote)) *quote)
-	 ((eq? (car e) (quote lambda)) *lambda)
-	 ((eq? (car e) (quote cond)) *cond)
+       (cond 
+	 ((eq? (car e) 'quote) *quote)
+	 ((eq? (car e) 'lambda) *lambda)
+	 ((eq? (car e) 'cond) *cond)
 	 (else *application)))
-	 (else *application))))
+      (else *application))))
 
 (define expression-to-action
   (lambda (e)
-    (cond
+    (cond 
       ((atom? e) (atom-to-action e))
       (else (list-to-action e)))))
 
@@ -97,7 +97,7 @@
 
 (define value
     (lambda (e)
-        (meaning e (quote ()))))
+        (meaning e '())))
 
 (define table-of first)
 
@@ -107,7 +107,7 @@
 
 (define else?
   (lambda (x)
-    (equal? (quote else) x)))
+    (equal? 'else x)))
 
 (define question-of first)
 (define answer-of second)
@@ -127,32 +127,23 @@
   (lambda (args table)
     (cond
       ((null? args) (quote ()))
-      (else (cons (meaning (car args) table) (evlis (cdr args) table))))))
+      (else (cons (meaning (car args) table) (evlis (cdr args) table)))))) 
 
 (define primitive?
   (lambda (I)
-    (cond
-      ((eq? I (quote cons)) #t)
-      ((eq? I (quote car)) #t)
-      ((eq? I (quote cdr)) #t)
-      ((eq? I (quote null?)) #t)
-      ((eq? I (quote eq?)) #t)
-      ((eq? I (quote atom?)) #t)
-      ((eq? I (quote zero?)) #t)
-      ((eq? I (quote add1)) #t)
-      ((eq? I (quote sub1)) #t)
-      ((eq? I (quote number?)) #t)
-      (else #f))))
+    (eq? (first I) 'primitive)))
 
-(define non-primitive? (not primitive?))
+(define non-primitive?
+  (lambda (I)
+    (eq? (first I) 'non-primitive)))
 
 (define :atom?
   (lambda (x)
     (cond
       ((atom? x) #t)
       ((null? x) #f)
-      ((eq? (car x) (quote primitive)) #t)
-      ((eq? (car x) (quote non-primitive) #t))
+      ((eq? (car x) 'primitive) #t)
+      ((eq? (car x) 'non-primitive) #t)
       (else #f))))
 
 (define apply-primitive
@@ -165,27 +156,39 @@
       ((eq? name (quote eq?)) (eq? (first vals) (second vals)))
       ((eq? name (quote atom?)) (:atom? (first vals)))
       ((eq? name (quote zero?)) (zero? (first vals)))
-      ((eq? name (quote add1)) (add1 (first vals)))
-      ((eq? name (quote sub1)) (sub1 (first vals)))
+      ((eq? name (quote addl)) (add1 (first vals)))
+      ((eq? name (quote subl)) (sub1 (first vals)))
       ((eq? name (quote number?)) (number? (first vals))))))
 
 (define apply-closure
   (lambda (closure vals)
     (meaning (third closure) (cons (build (second closure) vals) (car closure)))))
 
-(define apply
+(define apply 
   (lambda (fun vals)
     (cond
-      ((primitive? fun) (apply-primitive fun vals))
-      ((non-primitive? fun) (apply-closure fun vals)))))
+      ((primitive? fun) (apply-primitive (second fun) vals))
+      ((non-primitive? fun) (apply-closure (second fun) vals)))))
 
 (define *application
   (lambda (e table)
     (apply (meaning (car e) table) (evlis (cdr e) table))))
 
-
-(value '(cdr '(1 2 3)))
+;(define e '(cdr (quote (1 2 3))))
+;(define table '())
+;(meaning (car e) table)
+;(meaning (cdr e) table)
+;(define co (meaning '(quote (1 2 3)) table))
+;(apply (meaning (car e) table) '((1 2 3)))
+;(meaning (car '((1 2 3))) table)
+;(evlis '((1 2 3)) table)
+;(value '(cons 1 '(1 2)))
 ;e = (cdr '(1 2 3))
 ;cdr e=('(1 2 3))
 ;(apply (primitive cdr) ((1 2 3)))
+;(value '(car '(1 2)))
+;(value '(cons 'a '(1 2)))
+;(value '(cdr '(1 2 3)))
+;(value '(null? '(1)))
+
 
